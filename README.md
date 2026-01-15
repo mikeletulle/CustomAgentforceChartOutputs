@@ -327,3 +327,48 @@ Placing `renderer.js` at the Lightning Type root (next to schema.json) will not 
 
 ---
 
+## A Note on LWC Caching (Yes, It’s Frustrating)
+
+Lightning Web Component caching in the context of **Agentforce custom outputs and Lightning Types** can be extremely frustrating and non-obvious.
+
+In practice, changes to LWCs often **do not appear immediately**, even after:
+- successful deployments
+- hard refreshes
+- clearing browser cache
+- restarting VS Code
+- redeploying the same bundle
+
+### What Actually Worked
+
+During development of this repo, the only reliable ways to force changes to appear were:
+
+- **Renaming the LWC bundle itself** (for example `arpdMetricsV3` → `arpdMetricsV4`)
+- Updating the Lightning Type `renderer.json` to point at the new bundle name
+- Using a **browser Guest Profile**
+- Fully **closing the Guest Profile window and reopening it** after deployments
+
+Simply refreshing the page was not sufficient. If the Guest Profile remained open, Salesforce would frequently continue rendering an older cached version of the LWC.
+
+### Why This Matters
+
+This behavior makes it very easy to misdiagnose issues as:
+- broken deployments
+- incorrect renderer wiring
+- payload binding problems
+
+when in reality the correct code *is deployed*, but the UI is still rendering a cached version.
+
+### Practical Advice
+
+If you believe your changes are correct but are not appearing:
+
+1. Assume caching first.
+2. Try a new LWC bundle name (V4, V5, etc.).
+3. Close and reopen the Guest Profile completely.
+4. Verify the Agent action output is pointing at the newest Lightning Type.
+
+This is not ideal, but it is currently the most reliable workflow when iterating on Agentforce-rendered LWCs.
+
+
+---
+
