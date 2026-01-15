@@ -159,3 +159,171 @@ This project demonstrates how **Agentforce custom outputs** can move beyond plai
 - The same architecture can support Apex, CRMA, Tableau, or external analytics
 
 Together, these examples illustrate how Agentforce can function as an intelligent business assistant rather than just a conversational interface.
+
+## How the Pieces Wire Together (Exact V4 Names in This Repo)
+
+Custom Agentforce chart outputs only work when several independently-deployed artifacts **all reference each other correctly**. Most “There was a problem rendering” or “it’s still showing the old version” issues come from a **single name mismatch** across these layers:
+
+- LWC bundle name
+- Lightning Type folder + metadata
+- `schema.json` and `renderer.json` content
+- Apex action + Apex payload class names
+- LWC `.js-meta.xml` `targetConfigs` values (when used)
+- Agent action output configuration in Setup (output “name” + output “type”)
+
+This repo contains two V4 use cases:
+
+1. **ARPD Metrics (Apex-driven end-to-end)**
+2. **Top Products (currently renderer uses `topProductsMockV4` due to the binding/rendering bug being investigated)**
+
+---
+
+# 1) ARPD Metrics (Apex → Lightning Type → LWC)
+
+### A. Apex classes (data source)
+- **Action (Invocable):** `AF4_GetArpdMetricsAction.cls`
+- **Payload type:** `AF4_ArpdMetricsPayload.cls`
+
+The action returns an output field named **`arpd`**:
+- `AF4_GetArpdMetricsAction.Output.arpd : AF4_ArpdMetricsPayload`
+
+### B. Lightning Type bundle (binding contract)
+- **Lightning Type folder:** `force-app/main/default/lightningTypes/AF4ArpdMetricsTypeV4/`
+- **Type metadata:** `AF4ArpdMetricsTypeV4.lightningTypeBundle-meta.xml`
+- **Schema:** `schema.json`
+- **Renderer config:** `lightningDesktopGenAi/renderer.json`
+- **Renderer implementation (if present/required in your org):** `lightningDesktopGenAi/renderer.js`
+
+Key references that must match:
+
+**1) schema.json → Apex payload type**
+- File: `lightningTypes/AF4ArpdMetricsTypeV4/schema.json`
+- Current content references:
+  - `@apexClassType/AF4_ArpdMetricsPayload`
+
+**2) renderer.json → LWC bundle**
+- File: `lightningTypes/AF4ArpdMetricsTypeV4/lightningDesktopGenAi/renderer.json`
+- Current content references:
+  - `c/arpdMetricsV4`
+
+> Note on renderer.js location  
+> If your org requires a `renderer.js`, it must live here:
+> `lightningTypes/AF4ArpdMetricsTypeV4/lightningDesktopGenAi/renderer.js`  
+> (It cannot sit beside `schema.json` or at the type root.)
+
+### C. LWC renderer (presentation layer)
+- **LWC bundle folder:** `force-app/main/default/lwc/arpdMetricsV4/`
+- **Meta file:** `arpdMetricsV4.js-meta.xml`
+
+Key references that must match:
+
+**3) LWC meta targetConfigs → Lightning Type API name**
+- File: `lwc/arpdMetricsV4/arpdMetricsV4.js-meta.xml`
+- Current config references:
+  - `sourceType name="c__AF4ArpdMetricsTypeV4"`
+  - `property name="data" type="c__AF4ArpdMetricsTypeV4"`
+
+That means the Lightning Type API name being targeted is:
+- **`c__AF4ArpdMetricsTypeV4`**
+
+### D. Agent action output configuration (Setup/UI)
+In the Agentforce action output mapping UI:
+
+- The **output name** should match what your action emits (commonly `arpd`).
+- The **output type** must be set to the Lightning Type:
+  - **`c__AF4ArpdMetricsTypeV4`**
+
+If the output type is still pointed at an older type (V2/V3), you will keep seeing old behavior even when V4 is deployed.
+
+---
+
+# 2) Top Products (Apex present, but renderer currently points to mock LWC)
+
+### A. Apex classes (intended data source)
+- **Action (Invocable):** `AF4_GetTopProductsAction.cls`
+- **Payload type:** `AF4_TopProductsPayload.cls`
+- **Metric row type:** `AF4_TopProductMetric.cls`
+
+Typically you’ll see an output field like:
+- `AF4_GetTopProductsAction.Output.<something> : AF4_TopProductsPayload`
+
+(Exact output variable name depends on your action class definition.)
+
+### B. Lightning Type bundle
+- **Lightning Type folder:** `force-app/main/default/lightningTypes/AF4TopProductsTypeV4/`
+- **Schema:** `schema.json`
+- **Renderer config:** `lightningDesktopGenAi/renderer.json`
+- **Renderer implementation (if present/required):** `lightningDesktopGenAi/renderer.js`
+
+Key references that must match:
+
+**1) schema.json → Apex payload type**
+- File: `lightningTypes/AF4TopProductsTypeV4/schema.json`
+- Current content references:
+  - `@apexClassType/AF4_TopProductsPayload`
+
+**2) renderer.json → which LWC actually renders**
+- File: `lightningTypes/AF4TopProductsTypeV4/lightningDesktopGenAi/renderer.json`
+- In this repo, it currently points to:
+  - **`c/topProductsMockV4`**
+
+Even though the schema description says “renders with topProductsV4”, the runtime renderer selection is controlled by **renderer.json**.
+
+### C. LWCs involved
+There are two LWCs in the repo that relate to Top Products:
+
+1) **Mock renderer (known-good UI wiring)**
+- `force-app/main/default/lwc/topProductsMockV4/`
+- `topProductsMockV4.js-meta.xml` includes **only**:
+  - `<target>lightning__AgentforceOutput</target>`
+- No `targetConfigs` are required for the mock to render.
+
+2) **Real renderer target (in progress / bug investigation)**
+- `force-app/main/default/lwc/topProductsV4/`
+- `topProductsV4.js-meta.xml` currently includes `targetConfigs` referencing:
+  - `c__AF4TopProductsTypeV4`
+
+If you switch `renderer.json` to `c/topProductsV4`, then `topProductsV4` must be stable against payload shape and the binding bug you’re working through.
+
+### D. Agent action output configuration (Setup/UI)
+In the Agentforce action output mapping UI:
+
+- The **output type** for Top Products must be:
+  - **`c__AF4TopProductsTypeV4`**
+- If the Lightning Type points to `topProductsMockV4` but the action output is still set to an older type, you’ll get inconsistent behavior that looks like caching.
+
+---
+
+# Quick “Does This Name Match?” Checklist
+
+Use this when something doesn’t render:
+
+### For ARPD
+- Lightning Type schema points to: `@apexClassType/AF4_ArpdMetricsPayload`
+- Lightning Type renderer points to: `c/arpdMetricsV4`
+- LWC meta targetConfig points to: `c__AF4ArpdMetricsTypeV4`
+- Agent action output “type” points to: `c__AF4ArpdMetricsTypeV4`
+
+### For Top Products
+- Lightning Type schema points to: `@apexClassType/AF4_TopProductsPayload`
+- Lightning Type renderer points to: `c/topProductsMockV4` (current)
+- If you change renderer to `c/topProductsV4`, ensure:
+  - `topProductsV4.js-meta.xml` targetConfig references `c__AF4TopProductsTypeV4`
+  - LWC JS tolerates payload wrapper differences and null/undefined lists
+
+---
+
+# Important Note on `renderer.js` Location
+
+If you are using (or your org requires) a Lightning Type renderer implementation file, it must live at:
+
+- `force-app/main/default/lightningTypes/<LightningTypeName>/lightningDesktopGenAi/renderer.js`
+
+Examples:
+- `.../lightningTypes/AF4ArpdMetricsTypeV4/lightningDesktopGenAi/renderer.js`
+- `.../lightningTypes/AF4TopProductsTypeV4/lightningDesktopGenAi/renderer.js`
+
+Placing `renderer.js` at the Lightning Type root (next to schema.json) will not work.
+
+---
+
