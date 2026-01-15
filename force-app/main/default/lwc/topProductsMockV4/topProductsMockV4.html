@@ -1,0 +1,25 @@
+<template>
+  <section class="card">
+    <header class="header">
+      <h2 class="title">Top Add-On Products</h2>
+      <p class="subtitle">Amended increased contracts</p>
+    </header>
+
+    <div class="chart">
+      <template for:each={rows} for:item="r">
+        <div class="row" key={r.name}>
+          <!-- bar -->
+          <div class="barTrack" aria-hidden="true">
+            <div class="barFill" style={r.barStyle}></div>
+          </div>
+
+          <!-- value -->
+          <div class="value">{r.value}</div>
+
+          <!-- name underneath (full width) -->
+          <div class="nameBelow">{r.name}</div>
+        </div>
+      </template>
+    </div>
+  </section>
+</template>

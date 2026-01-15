@@ -1,0 +1,61 @@
+.card {
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 14px;
+  background: #fff;
+}
+
+.header {
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.subtitle {
+  margin-top: 4px;
+  color: #444;
+  font-size: 0.9rem;
+}
+
+.list {
+  display: grid;
+  gap: 10px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1.6fr 2.4fr 0.6fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.name {
+  font-size: 0.9rem;
+  color: #222;
+}
+
+.barWrap {
+  height: 10px;
+  border-radius: 999px;
+  background: #f2f2f2;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  border-radius: 999px;
+  background: #4b8bf4;
+}
+
+.value {
+  text-align: right;
+  font-weight: 700;
+}
+
+.empty {
+  color: #666;
+  font-size: 0.9rem;
+}

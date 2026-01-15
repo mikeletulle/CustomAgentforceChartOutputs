@@ -1,0 +1,6 @@
+{
+  "title": "AF4 ARPD Metrics Type V4",
+  "description": "V4 clone to break caching; renders with arpdMetricsV4",
+  "lightning:type": "@apexClassType/AF4_ArpdMetricsPayload"
+}
+

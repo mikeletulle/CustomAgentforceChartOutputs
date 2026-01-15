@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningTypeBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+  <masterLabel>AF4 Top Products Type V4</masterLabel>
+  <description>V4 clone to break caching; renders with topProductsV4</description>
+</LightningTypeBundle>
+

@@ -1,0 +1,28 @@
+<template>
+  <section class="card">
+    <div class="header">
+      <div class="title">{title}</div>
+      <template if:true={subtitle}>
+        <div class="subtitle">{subtitle}</div>
+      </template>
+    </div>
+
+    <template if:true={hasProducts}>
+      <div class="list">
+        <template for:each={rows} for:item="r">
+          <div key={r.key} class="row">
+            <div class="name">{r.name}</div>
+            <div class="barWrap" title={r.valueText}>
+              <div class="bar" style={r.style}></div>
+            </div>
+            <div class="value">{r.valueText}</div>
+          </div>
+        </template>
+      </div>
+    </template>
+
+    <template if:false={hasProducts}>
+      <div class="empty">No products returned.</div>
+    </template>
+  </section>
+</template>

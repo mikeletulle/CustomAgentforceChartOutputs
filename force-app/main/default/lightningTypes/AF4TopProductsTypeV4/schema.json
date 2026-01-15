@@ -1,0 +1,5 @@
+{
+  "title": "AF4 Top Products Type V4",
+  "description": "V4 clone to break caching; renders with topProductsV4",
+  "lightning:type": "@apexClassType/AF4_TopProductsPayload"
+}

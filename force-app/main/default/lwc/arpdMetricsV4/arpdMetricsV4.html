@@ -1,0 +1,35 @@
+<template>
+  <section class="wrap">
+    <div class="card">
+      <header class="cardHeader">
+        <h2 class="title">{metricTitle}</h2>
+      </header>
+
+      <div class="tiles">
+        <template for:each={tiles} for:item="t">
+          <div class="tile" key={t.key}>
+            <div class="tileLabel">{t.label}</div>
+
+            <div class="tileValue">
+              {t.percentText}<span class="pct">%</span>
+            </div>
+
+            <div class="tileSecondary">
+              <span class="amount">{t.fromText}</span>
+              <span class="arrow">→</span>
+              <span class="amount">{t.toText}</span>
+            </div>
+
+            <div class="barTrack" aria-hidden="true">
+              <div class="barFill" style={t.barStyle}></div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <template if:true={headline}>
+        <div class="summary">{headline}</div>
+      </template>
+    </div>
+  </section>
+</template>
