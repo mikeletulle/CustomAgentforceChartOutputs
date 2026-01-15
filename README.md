@@ -18,7 +18,7 @@ While this repository is intended for **demo and exploration purposes**, the und
 
 ## ARPD Metrics Visualization (Apex-driven)
 
-![ARPD Metrics](ARPDMetrics.png)
+![ARPD Metrics] <img src="ARPDMetrics.png" width="600" />
 
 The **Average Revenue Per Dealer (ARPD)** chart is the most complete and realistic use case in this repository.
 
@@ -41,7 +41,7 @@ This mirrors a real production setup where business logic and calculations live 
 
 ## Agentforce Output Configuration
 
-![ARPD Metrics Action Output Configuration](ARPDMetricsActionOutputConfig.png)
+![ARPD Metrics Action Output Configuration]<img src="ARPDMetricsActionOutputConfig.png" width="600" />
 
 This image shows how the **ARPD Agentforce action output** is configured to map its structured Apex response to the Lightning Type used by the renderer. This configuration allows the Agentforce response to be visualized as a chart instead of plain text.
 
@@ -49,7 +49,7 @@ This image shows how the **ARPD Agentforce action output** is configured to map 
 
 ## Top Products Visualization (LWC-mocked)
 
-![Top Products](TopProducts.png)
+![Top Products] <img src="TopProducts.png" width="600" />
 
 The **Top Add-On Products** visualization demonstrates a second charting pattern but currently uses **mocked data inside the LWC**.
 
