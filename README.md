@@ -313,17 +313,16 @@ Use this when something doesn’t render:
 
 ---
 
-# Important Note on `renderer.js` Location
+# Important Note on `renderer.json` Location
 
 If you are using (or your org requires) a Lightning Type renderer implementation file, it must live at:
 
-- `force-app/main/default/lightningTypes/<LightningTypeName>/lightningDesktopGenAi/renderer.js`
+- `force-app/main/default/lightningTypes/<LightningTypeName>/lightningDesktopGenAi/renderer.json`
 
 Examples:
-- `.../lightningTypes/AF4ArpdMetricsTypeV4/lightningDesktopGenAi/renderer.js`
-- `.../lightningTypes/AF4TopProductsTypeV4/lightningDesktopGenAi/renderer.js`
+- `.../lightningTypes/AF4ArpdMetricsTypeV4/lightningDesktopGenAi/renderer.json`
 
-Placing `renderer.js` at the Lightning Type root (next to schema.json) will not work.
+Placing `renderer.json` at the Lightning Type root (next to schema.json) will not work.
 
 ---
 
